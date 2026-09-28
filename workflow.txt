@@ -1,0 +1,20 @@
+# terminologies
+
+1. taxonomy - Taxonomy is the science and practice of naming, describing, and classifying items, organisms, or concepts into structured groups based on shared characteristics.
+
+2. SIEM - Security Information and Event Management (SIEM) is a cybersecurity solution that collects and analyzes log data from across an organization's IT infrastructure to detect threats in real time.
+
+3. Data Lake - A data lake is a centralized storage repository that holds vast amounts of structured, semi-structured, and unstructured data in its native, raw format.
+
+4. air gapped network - An air-gapped network is a security measure that completely isolates a computer or network from unsecured external networks, including the public internet.
+
+# possible workflow
+## up to normalizing the data and ready-to-use data for analytics
+
+1. Open log file
+2. Detect event
+3. Choose parser
+4. Parse log file
+5. Derive struct data
+6. Set values to common json format schema
+7. Repeat for one or more log file and derive analytics
