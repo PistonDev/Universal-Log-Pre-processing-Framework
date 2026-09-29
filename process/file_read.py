@@ -2,6 +2,7 @@ import sys
 
 ERROR_READ = ""
 
+@staticmethod
 def read_file(file_path) -> str:
     try:
         with open(file = file_path, mode = "r") as inp_buffer:
