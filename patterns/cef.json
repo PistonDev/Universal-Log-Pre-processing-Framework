@@ -1,0 +1,14 @@
+{
+    "patterns": [
+        {
+            "name": "CEF",
+            "priority": 1,
+            "regex": "^CEF:(?P<version>\\d+)\\|(?P<vendor>(?:[^|\\\\]|\\\\.)*)\\|(?P<product>(?:[^|\\\\]|\\\\.)*)\\|(?P<device_version>(?:[^|\\\\]|\\\\.)*)\\|(?P<signature_id>(?:[^|\\\\]|\\\\.)*)\\|(?P<name>(?:[^|\\\\]|\\\\.)*)\\|(?P<severity>(?:[^|\\\\]|\\\\.)*)\\|(?P<extension>.*)$"
+        },
+        {
+            "name": "Syslog CEF",
+            "priority": 2,
+            "regex": "^.*?\\bCEF:(?P<version>\\d+)\\|(?P<vendor>(?:[^|\\\\]|\\\\.)*)\\|(?P<product>(?:[^|\\\\]|\\\\.)*)\\|(?P<device_version>(?:[^|\\\\]|\\\\.)*)\\|(?P<signature_id>(?:[^|\\\\]|\\\\.)*)\\|(?P<name>(?:[^|\\\\]|\\\\.)*)\\|(?P<severity>(?:[^|\\\\]|\\\\.)*)\\|(?P<extension>.*)$"
+        }
+    ]
+}

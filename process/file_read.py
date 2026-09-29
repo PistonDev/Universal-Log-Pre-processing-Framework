@@ -1,4 +1,4 @@
-import sys
+import sys, json, os
 
 ERROR_READ = ""
 
@@ -15,6 +15,19 @@ def read_file(file_path) -> str:
             
     except FileNotFoundError:
         print(f"Given file name {file_path} is invalid!")
+        sys.exit()
+
+@staticmethod
+def read_pattern(json_file) -> dict:
+    json_path = os.path.join(os.getcwd(), "patterns", json_file + ".json")
+
+    try:
+        with open(file = json_path, mode = "r") as inp_buffer:
+            data = json.load(inp_buffer)
+            return data["patterns"]
+        
+    except FileNotFoundError:
+        print(f"Given file name {json_path} is invalid!")
         sys.exit()
 
 class ProcessFile:

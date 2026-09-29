@@ -2,49 +2,50 @@ from dataclasses import dataclass
 
 @dataclass
 class ApacheEvent:
-    timestamp:  str
-    level:      str
-    message:    str
     raw:        str
+    timestamp:  str | None = None
+    level:      str | None = None
+    message:    str | None = None
 
 @dataclass
 class SysLogEvent:
-    timestamp:  str
-    host:       str
-    component:  str
-    pid:        int | None
-    message:    str
     raw:        str
+    timestamp:  str | None = None
+    host:       str | None = None
+    component:  str | None = None
+    pid:        int | None = None
+    message:    str | None = None
 
 @dataclass
 class CEFEvent:
-    version:        int
-    vendor:         str
-    product:        str
-    device_version: str
-    signature_id:   str
-    name:           str
-    severity:       str
-    extension:      str
     raw:            str
+    version:        int | None = None
+    vendor:         str | None = None
+    product:        str | None = None
+    device_version: str | None = None
+    signature_id:   str | None = None
+    name:           str | None = None
+    severity:       str | None = None
+    extension:      str | None = None
 
 @dataclass
 class FortinetEvent:
-    date:       str | None
-    time:       str | None
-    devname:    str | None
-    devid:      str | None
-    logid:      str | None
-    type:       str | None
-    subtype:    str | None
-    level:      str | None
-    fields:     dict
     raw:        str
+    fields:     dict
+    date:       str | None = None
+    time:       str | None = None
+    devname:    str | None = None
+    devid:      str | None = None
+    logid:      str | None = None
+    type:       str | None = None
+    subtype:    str | None = None
+    level:      str | None = None
 
 @dataclass
 class UniversalEvent:
+    raw:                str
+    source_type:        str
     timestamp:          str | None = None
-    source_type:        str | None = None
     vendor:             str | None = None
     product:            str | None = None
     host:               str | None = None
@@ -60,4 +61,3 @@ class UniversalEvent:
     destination_port:   int | None = None
     protocol:           str | None = None
     username:           str | None = None
-    raw:                str | None = None

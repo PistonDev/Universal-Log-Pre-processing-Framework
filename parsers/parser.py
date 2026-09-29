@@ -1,6 +1,8 @@
 import re
-from parsers.event import *
 from abc import ABC, abstractmethod
+
+from parsers.event import *
+from process.file_read import read_pattern
 
 def to_int(val) -> int | None:
     if val is None:
@@ -16,6 +18,7 @@ class IParser(ABC):
     def __init__(self, data, source: str):
         self.data = data
         self.source = source
+        self.patterns = read_pattern(self.source)
 
     @abstractmethod
     def parse(self) -> list:
@@ -29,68 +32,57 @@ class Apache(IParser):
     def __init__(self, data: str):
         super().__init__(data, "apache")
 
-        self.regex = (
-            r"^\[(?P<timestamp>[^\]]+)\]\s+"
-            r"\[(?P<level>[^\]]+)\]\s+"
-            r"(?P<message>.*)$"
-        )
-
     def parse(self):
         events = []
 
         for line in self.data.splitlines():
-            match = re.match(self.regex, line)
 
-            if match:
-                event = ApacheEvent(
-                    timestamp = match.group("timestamp"),
-                    level = match.group("level"),
-                    message = match.group("message"),
-                    raw = line
-                )
+            for pattern in self.patterns:
+                match = re.match(pattern["regex"], line)
 
-                events.append(event)
+                if match:
+                    event = ApacheEvent(
+                        raw = line,
+                        timestamp = match.group("timestamp"),
+                        level = match.group("level"),
+                        message = match.group("message")
+                    )
+                    events.append(event)
+                    break
         return events
 
     def normalize(self, event: ApacheEvent):
         return UniversalEvent(
-            timestamp = event.timestamp,
+            raw = event.raw,
             source_type = self.source,
+            timestamp = event.timestamp,
             product = "Apache",
-            severity = event.level,
-            raw = event.raw
+            severity = event.level
         )
 
 class SysLog(IParser):
     def __init__(self, data: str):
         super().__init__(data, "syslog")
 
-        self.regex = (
-            r"^(?P<timestamp>[A-Z][a-z]{2}\s+\d{1,2}\s+"
-            r"\d{2}:\d{2}:\d{2})\s+"
-            r"(?P<host>\S+)\s+"
-            r"(?P<component>[^\[:]+)"
-            r"(?:\[(?P<pid>\d+)\])?:\s+"
-            r"(?P<message>.*)$"
-        )
-
     def parse(self):
         events = []
 
         for line in self.data.splitlines():
-            match = re.match(self.regex, line)
 
-            if match:
-                event = SysLogEvent(
-                    timestamp = match.group("timestamp"),
-                    host = match.group("host"),
-                    component = match.group("component"),
-                    pid = int(match.group("pid")) if match.group("pid") else None,
-                    message = match.group("message"),
-                    raw = line
-                )
+            for pattern in self.patterns:
+                match = re.match(pattern["regex"], line)
 
-                events.append(event)
+                if match:
+                    event = SysLogEvent(
+                        raw = line,
+                        timestamp = match.group("timestamp"),
+                        host = match.group("host"),
+                        component = match.group("component"),
+                        pid = int(match.group("pid")) if match.group("pid") else None,
+                        message = match.group("message")
+                    )
+                    events.append(event)
+                    break
         return events
 
     def extract_fields(self, message: str) -> dict:
@@ -104,8 +96,9 @@ class SysLog(IParser):
         fields = self.extract_fields(event.message)
 
         return UniversalEvent(
-            timestamp = event.timestamp,
+            raw = event.raw,
             source_type = self.source,
+            timestamp = event.timestamp,
             host = event.host,
             component = event.component,
             pid = event.pid,
@@ -120,44 +113,34 @@ class SysLog(IParser):
 
             source_ip = fields.get("rhost"),
             username = fields.get("user"),
-            raw = event.raw
         )
 
 class CEF(IParser):
     def __init__(self, data):
         super().__init__(data, "cef")
 
-        self.regex = (
-            r"^CEF:(?P<version>\d+)\|"
-            r"(?P<vendor>(?:[^|\\]|\\.)*)\|"
-            r"(?P<product>(?:[^|\\]|\\.)*)\|"
-            r"(?P<device_version>(?:[^|\\]|\\.)*)\|"
-            r"(?P<signature_id>(?:[^|\\]|\\.)*)\|"
-            r"(?P<name>(?:[^|\\]|\\.)*)\|"
-            r"(?P<severity>(?:[^|\\]|\\.)*)\|"
-            r"(?P<extension>.*)$"
-        )
-
     def parse(self):
         events = []
 
         for line in self.data.splitlines():
-            match = re.match(self.regex, line)
 
-            if match:
-                event = CEFEvent(
-                    version = int(match.group("version")),
-                    vendor = match.group("vendor"),
-                    product = match.group("product"),
-                    device_version = match.group("device_version"),
-                    signature_id = match.group("signature_id"),
-                    name = match.group("name"),
-                    severity = match.group("severity"),
-                    extension = match.group("extension"),
-                    raw = line
-                )
+            for pattern in self.patterns:
+                match = re.match(pattern["regex"], line)
 
-                events.append(event)
+                if match:
+                    event = CEFEvent(
+                        raw = line,
+                        version = int(match.group("version")),
+                        vendor = match.group("vendor"),
+                        product = match.group("product"),
+                        device_version = match.group("device_version"),
+                        signature_id = match.group("signature_id"),
+                        name = match.group("name"),
+                        severity = match.group("severity"),
+                        extension = match.group("extension")
+                    )
+                    events.append(event)
+                    break
         return events
 
     def extract_fields(self, extension: str) -> dict:
@@ -176,8 +159,9 @@ class CEF(IParser):
         fields = self.extract_fields(event.extension)
 
         return UniversalEvent(
-            timestamp = fields.get("rt"),
+            raw = event.raw,
             source_type = self.source,
+            timestamp = fields.get("rt"),
             vendor = event.vendor,
             product = event.product,
             host = fields.get("dhost"),
@@ -187,18 +171,12 @@ class CEF(IParser):
             source_ip = fields.get("src"),
             source_port = to_int(fields.get("spt")),
             protocol = fields.get("proto"),
-            username = fields.get("suser"),
-            raw = event.raw
+            username = fields.get("suser")
         )
 
 class Fortinet(IParser):
     def __init__(self, data):
         super().__init__(data, "fortinet")
-
-        self.regex = (
-            r'(?P<key>\w+)='
-            r'(?:"(?P<quoted>[^"]*)"|(?P<unquoted>\S+))'
-        )
 
     def parse(self):
         events = []
@@ -206,30 +184,31 @@ class Fortinet(IParser):
         for line in self.data.splitlines():
             fields = {}
 
-            for match in re.finditer(self.regex, line):
-                value = (
-                    match.group("quoted")
-                    if match.group("quoted") is not None
-                    else match.group("unquoted")
-                )
+            for pattern in self.patterns:
+                for match in re.finditer(pattern["regex"], line):
+                    value = (
+                        match.group("quoted")
+                        if match.group("quoted") is not None
+                        else match.group("unquoted")
+                    )
 
-                fields[match.group("key")] = value
+                    fields[match.group("key")] = value
 
-            if fields:
-                event = FortinetEvent(
-                    date = fields.get("date"),
-                    time = fields.get("time"),
-                    devname = fields.get("devname"),
-                    devid = fields.get("devid"),
-                    logid = fields.get("logid"),
-                    type = fields.get("type"),
-                    subtype = fields.get("subtype"),
-                    level = fields.get("level"),
-                    fields = fields,
-                    raw = line
-                )
-
-                events.append(event)
+                if fields:
+                    event = FortinetEvent(
+                        raw = line,
+                        fields = fields,
+                        date = fields.get("date"),
+                        time = fields.get("time"),
+                        devname = fields.get("devname"),
+                        devid = fields.get("devid"),
+                        logid = fields.get("logid"),
+                        type = fields.get("type"),
+                        subtype = fields.get("subtype"),
+                        level = fields.get("level")
+                    )
+                    events.append(event)
+                    break
         return events
 
     def normalize(self, event: FortinetEvent):
@@ -240,8 +219,9 @@ class Fortinet(IParser):
             timestamp = f"{fields['date']} {fields['time']}"
 
         return UniversalEvent(
-            timestamp = timestamp,
+            raw = event.raw,
             source_type = self.source,
+            timestamp = timestamp,
             vendor = "Fortinet",
             product = "FortiGate",
             host = fields.get("devname"),
@@ -254,8 +234,7 @@ class Fortinet(IParser):
             destination_ip = fields.get("dstip"),
             destination_port = to_int(fields.get("dstport")),
             protocol = fields.get("proto"),
-            username = fields.get("user"),
-            raw = event.raw
+            username = fields.get("user")
         )
 
 class GenParser:

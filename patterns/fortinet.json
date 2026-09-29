@@ -1,0 +1,19 @@
+{
+    "patterns": [
+        {
+            "name": "FortiGate Key-Value",
+            "priority": 1,
+            "regex": "^(?:date=\\S+\\s+)?(?:time=\\S+\\s+)?(?:devname=\\\"[^\\\"]*\\\"|\\S+=\\S+)(?:\\s+(?:\\\"[^\\\"]*\\\"|\\S+))*$"
+        },
+        {
+            "name": "FortiGate CEF",
+            "priority": 2,
+            "regex": "^.*?\\bCEF:(?P<version>\\d+)\\|(?P<vendor>(?:[^|\\\\]|\\\\.)*)\\|(?P<product>(?:[^|\\\\]|\\\\.)*)\\|(?P<device_version>(?:[^|\\\\]|\\\\.)*)\\|(?P<signature_id>(?:[^|\\\\]|\\\\.)*)\\|(?P<name>(?:[^|\\\\]|\\\\.)*)\\|(?P<severity>(?:[^|\\\\]|\\\\.)*)\\|(?P<extension>.*)$"
+        },
+        {
+            "name": "FortiGate JSON",
+            "priority": 3,
+            "regex": "^\\s*\\{.*\\}\\s*$"
+        }
+    ]
+}
