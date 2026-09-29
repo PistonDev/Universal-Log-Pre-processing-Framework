@@ -12,6 +12,7 @@ def read_file(file_path) -> str:
                 return data
             else:
                 return ERROR_READ
+            
     except FileNotFoundError:
         print(f"Given file name {file_path} is invalid!")
         sys.exit()

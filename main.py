@@ -8,6 +8,7 @@ class Main:
 
     def process(self, debug = False):
         self.pipeline.read_src(debug)
+        self.pipeline.parse_src(debug)
 
 if __name__ == '__main__':
     main = Main()
