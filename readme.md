@@ -9,15 +9,15 @@
 - Currenlty, this program supports 4 parsers - Apache, Syslog, CEF, Fortinet.
 - You can follow the 'running' instructions down below and can process as many log files you want (just remember to follow "space" after every file path)
 
-### scalability
+### Scalability
 - The architecture is scalable as -
-    [!Architecture](docs/patterns_ss.png)
+    ![Architecture](docs/patterns_ss.png)
     - inside "patterns" dir you can add the regex patterns of any log file you want in this fashion : 
-    [!Architecture](docs/pattern_ss.png)
+    ![Architecture](docs/pattern_ss.png)
     - remember the 'name' of this '.json' file as it will be used as the 'source' keyword for the whole program.
-    [!Architecture](docs/catg.png)
+    ![Architecture](docs/catg.png)
     - inside 'process/file_catg.py' file you can add the regex for log file detection by yourself.
-    [!Architecture](docs/parser.png)
+    ![Architecture](docs/parser.png)
     - you can further add parser of your choice inside 'parsers/parser.py' file.
 
     **In this way you can add lot of log file - detection, pattern matching, parser in less time and complexity.**
