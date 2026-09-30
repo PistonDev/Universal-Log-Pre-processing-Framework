@@ -9,7 +9,8 @@ class Main:
     def process(self):
         self.pipeline.read_src(debug = False)
         self.pipeline.parse_src(debug = False)
-        self.pipeline.normalize_src(debug = True)
+        self.pipeline.normalize_src(debug = False)
+        self.pipeline.write_src(debug = True)
 
 if __name__ == '__main__':
     main = Main()

@@ -2,14 +2,14 @@ from dataclasses import dataclass
 
 @dataclass
 class ApacheEvent:
-    raw:        str
+    raw:        str | None = None
     timestamp:  str | None = None
     level:      str | None = None
     message:    str | None = None
 
 @dataclass
 class SysLogEvent:
-    raw:        str
+    raw:        str | None = None
     timestamp:  str | None = None
     host:       str | None = None
     component:  str | None = None
@@ -18,7 +18,7 @@ class SysLogEvent:
 
 @dataclass
 class CEFEvent:
-    raw:            str
+    raw:            str | None = None
     version:        int | None = None
     vendor:         str | None = None
     product:        str | None = None
@@ -30,8 +30,8 @@ class CEFEvent:
 
 @dataclass
 class FortinetEvent:
-    raw:        str
-    fields:     dict
+    raw:        str | None = None
+    fields:     dict| None = None
     date:       str | None = None
     time:       str | None = None
     devname:    str | None = None
@@ -43,8 +43,7 @@ class FortinetEvent:
 
 @dataclass
 class UniversalEvent:
-    raw:                str
-    source_type:        str
+    source_type:        str | None = None
     timestamp:          str | None = None
     vendor:             str | None = None
     product:            str | None = None
@@ -61,3 +60,4 @@ class UniversalEvent:
     destination_port:   int | None = None
     protocol:           str | None = None
     username:           str | None = None
+    raw:                str | None = None

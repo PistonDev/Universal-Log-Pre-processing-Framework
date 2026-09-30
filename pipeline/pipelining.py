@@ -1,8 +1,10 @@
+from datetime import datetime
 from dataclasses import dataclass
 
 from parsers.parser import IParser, GenParser
 from process.file_catg import DetectFile
 from process.file_read import ProcessFile, ERROR_READ
+from process.serialization import Serialize
 
 @dataclass
 class DataFormat:
@@ -66,3 +68,12 @@ class Pipeline:
                 print([event for event in uv_events])
 
             self.normalised_events[id] = uv_events
+
+    def write_src(self, debug):
+        for id, events in self.normalised_events.items():
+            stamp: str = datetime.now().strftime("%Y-%m-%d_%Hh-%Mm-%Ss") + "_~src~_" + str(self.structs[id].log_source)
+
+            Serialize().write(events, stamp)
+
+            if debug:
+                print(f"events with id : {id} has been written under '/output/{stamp}'")
