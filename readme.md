@@ -20,13 +20,13 @@
 
     - remember the 'name' of this '.json' file as it will be used as the 'source' keyword for the whole program.
 
-    ![Architecture](docs/catg.png)
-
     - inside 'process/file_catg.py' file you can add the regex for log file detection by yourself.
 
-    ![Architecture](docs/parser.png)
+    ![Architecture](docs/catg.png)
 
     - you can further add parser of your choice inside 'parsers/parser.py' file.
+
+    ![Architecture](docs/parser.png)
 
     **In this way you can add lot of log file - detection, pattern matching, parser in less time and complexity.**
 
