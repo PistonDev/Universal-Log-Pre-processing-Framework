@@ -23,9 +23,8 @@ reg_expressions = {
     # FortiGate key=value: date=... time=... devname="x" logid="0000000013" type="traffic" ...
     "fortinet": r"""(?x)
         ^
-        (?= .* \b logid = "? \d{10} \b )
-        (?= .* \b type  = "? [a-z][a-z\-]* \b )
-        (?= .* \b (?: devname | devid ) = "? [\w.\-]+ )
+        (?=.*\blogid\s*=\s*"?\d{10}"?)
+        (?=.*\btype\s*=\s*"?[a-z][a-z\-]*"?)
     """,
 
     # Palo Alto CSV syslog: 1,2023/09/29 10:00:00,001234567890,TRAFFIC,end,...
