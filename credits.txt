@@ -3,4 +3,4 @@ sample logs used by -
 1. Apache -> LogHub
 2. Syslog -> LogHub
 3. CEF -> log-zoo (link: https://github.com/sva-s1/log-zoo)
-4. Fortinet ->
+4. Fortinet -> generated with AI

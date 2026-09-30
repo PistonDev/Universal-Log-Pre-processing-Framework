@@ -11,13 +11,21 @@
 
 ### Scalability
 - The architecture is scalable as -
+
     ![Architecture](docs/patterns_ss.png)
+
     - inside "patterns" dir you can add the regex patterns of any log file you want in this fashion : 
+
     ![Architecture](docs/pattern_ss.png)
+
     - remember the 'name' of this '.json' file as it will be used as the 'source' keyword for the whole program.
+
     ![Architecture](docs/catg.png)
+
     - inside 'process/file_catg.py' file you can add the regex for log file detection by yourself.
+
     ![Architecture](docs/parser.png)
+
     - you can further add parser of your choice inside 'parsers/parser.py' file.
 
     **In this way you can add lot of log file - detection, pattern matching, parser in less time and complexity.**
@@ -29,6 +37,7 @@
     - normalize log file into 'Universal Events' (data format)
     - write derived data of the generalised data format into 'output' dir.
 
+- There are few sample log files and also the credit of their source is mentioned in the repository.
 - All the converted log file data are stored into 'output' dir in the 'jsonl' format.
 - For every process in the pipelining there are switchable debugging layers.
 
