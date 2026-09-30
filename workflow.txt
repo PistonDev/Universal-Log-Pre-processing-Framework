@@ -8,13 +8,13 @@
 
 4. air gapped network - An air-gapped network is a security measure that completely isolates a computer or network from unsecured external networks, including the public internet.
 
-# possible workflow
+# proposed workflow
 ## up to normalizing the data and ready-to-use data for analytics
 
 1. Open log file
-2. Detect event
-3. Choose parser
+2. Detect log type
+3. Choose log parser
 4. Parse log file
-5. Derive struct data
-6. Set values to common json format schema
-7. Repeat for one or more log file and derive analytics
+5. Normalize log file
+6. Repeat for one or more log file and derive universal events
+7. write events as 'jsonl' format in 'output/' 

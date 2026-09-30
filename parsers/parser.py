@@ -13,7 +13,6 @@ def to_int(val) -> int | None:
     except ValueError:
         return None
 
-
 class IParser(ABC):
     def __init__(self, data, source: str):
         self.data = data
