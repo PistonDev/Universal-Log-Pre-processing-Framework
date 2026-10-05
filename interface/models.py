@@ -9,6 +9,7 @@ class ReturnType(Enum):
     SAVING = auto()
     REMOVING = auto()
     SELECTED = auto()
+    SAVE_ALL = auto()
     PROCESSING = auto()
     PROCESS_ALL = auto()
 

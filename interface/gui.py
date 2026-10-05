@@ -2,15 +2,20 @@ import os
 
 from collections import deque
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 
 from PySide6.QtWidgets import (
+    QLabel,
+    QWidget,
     QToolBar,
     QHeaderView,
+    QVBoxLayout,
     QMainWindow,  
     QPushButton,
     QFileDialog,
     QApplication, 
     QTableWidget,
+    QPlainTextEdit,
     QTableWidgetItem
     )
 
@@ -19,6 +24,9 @@ from interface.models import *
 class App(QApplication):
     def __init__(self):
         super().__init__([])
+
+        font = QFont("Consolas")
+        self.setFont(font)
 
 class MainWindow(QMainWindow):
     def __init__(self, title: str):
@@ -39,6 +47,11 @@ class CustomTaskBar(QToolBar):
             "process_all":
                 Component(
                     Button(event = Event(), instance = QPushButton("Process All"))
+                ),
+
+            "save_all":
+                Component(
+                    Button(event = Event(), instance = QPushButton("Save All"))
                 )
         }
 
@@ -67,10 +80,27 @@ class FileList(QTableWidget):
         for fid, comp in self.actions.items():
             btn: Component[Button] = comp
 
+            if btn is None:
+                continue
+
             if btn.component.bt_type == ButtonType.PROCESS:
                 process_ids.append(fid)
 
         return to_packet(process_ids, ReturnType.PROCESS_ALL)
+
+    def get_in_save_ids(self) -> DataPacket:
+        save_ids = []
+
+        for fid, comp in self.actions.items():
+            btn: Component[Button] = comp
+
+            if btn is None:
+                continue
+
+            if btn.component.bt_type == ButtonType.SAVE:
+                save_ids.append(fid)
+
+        return to_packet(save_ids, ReturnType.SAVE_ALL)
 
     def extend_selected_files(self, packet: DataPacket):
         if packet is not None:
@@ -152,6 +182,22 @@ class FileList(QTableWidget):
         for other_id, other_row in self.row_by_id.items():
             if other_row > row:
                 self.row_by_id[other_id] -= 1
+
+class MessageBox(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.label = QLabel(self, text = "Messages log")
+
+        self.messages = QPlainTextEdit()
+        self.messages.setReadOnly(True)
+
+        self._layout = QVBoxLayout(self)
+        self._layout.addWidget(self.label)
+        self._layout.addWidget(self.messages)
+
+    def add_message(self, message: str):
+        self.messages.appendPlainText(message)
 
 def open_files(parent) -> DataPacket:
     return to_packet(QFileDialog.getOpenFileNames(

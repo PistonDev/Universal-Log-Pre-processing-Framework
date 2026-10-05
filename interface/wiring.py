@@ -1,8 +1,13 @@
 from PySide6.QtCore import QTimer
 
+from PySide6.QtWidgets import(
+    QWidget,
+    QVBoxLayout
+)
+
 from interface.models import *
 from interface.gateway import Gateway
-from interface.gui import App, MainWindow, CustomTaskBar, FileList
+from interface.gui import App, MainWindow, CustomTaskBar, FileList, MessageBox
 
 class UIWiring:
     def __init__(self, gateway: Gateway):
@@ -11,11 +16,19 @@ class UIWiring:
         self.app = Component(App())
         self.window = Component(MainWindow("UPLF"))
 
-        self.taskbar = Component(CustomTaskBar(self.window.component))
-        self.file_list = Component(FileList(self.window.component))
+        self.central_widget = QWidget()
+        self.central_layout = QVBoxLayout(self.central_widget)
 
+        self.taskbar = Component(CustomTaskBar(self.window.component))
         self.window.component.addToolBar(self.taskbar.component)
-        self.window.component.setCentralWidget(self.file_list.component)
+
+        self.file_list = Component(FileList(self.window.component))
+        self.msgs_panel = Component(MessageBox())
+
+        self.central_layout.addWidget(self.file_list.component)
+        self.central_layout.addWidget(self.msgs_panel.component)
+
+        self.window.component.setCentralWidget(self.central_widget)
 
         # connections
         self.network = NetworkManager()
@@ -56,6 +69,17 @@ class UIWiring:
         self.process_all_button.component.instance.clicked.connect(lambda checked = False: self.network.transmit(
             self.process_to_gateway,
             self.process_all_button.component.event
+        ))
+
+        # save all button -> gateway
+        self.save_all_button = self.taskbar.component.buttons["save_all"]
+        self.save_all_button.component.event = Event(method = lambda: self.file_list.component.get_in_save_ids())
+
+        self.save_to_gateway: Connection = self.network.produce_connection(self.save_all_button.node, self.gateway.node, "save all -> gateway")
+
+        self.save_all_button.component.instance.clicked.connect(lambda checked = False: self.network.transmit(
+            self.save_to_gateway,
+            self.save_all_button.component.event
         ))
 
     def connect_dynamic(self):
@@ -118,7 +142,7 @@ class UIWiring:
             elif received.rt_type == ReturnType.SAVING:
                 fid = int(received.data)
 
-                msg: str = self.gateway.component.save_file(fid)
+                self.msgs_panel.component.add_message(self.gateway.component.save_file(fid))
                 self.file_list.component.result_transition(fid)
 
             elif received.rt_type == ReturnType.PROCESS_ALL:
@@ -126,6 +150,13 @@ class UIWiring:
                     for fid in received.data:
                         self.gateway.component.exec_file_pipeline(fid, self.file_list.component.files[fid])
                         self.file_list.component.transition_action(fid)
+
+            elif received.rt_type == ReturnType.SAVE_ALL:
+                if received.data:
+
+                    for fid in received.data:
+                        self.msgs_panel.component.add_message(self.gateway.component.save_file(fid))
+                        self.file_list.component.result_transition(fid)
 
     def process(self):
         self.app.component.exec()
