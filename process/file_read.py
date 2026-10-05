@@ -3,7 +3,7 @@ import sys, json, os
 ERROR_READ = ""
 
 @staticmethod
-def read_file(file_path) -> str:
+def read_file(file_path: str) -> str:
     try:
         with open(file = file_path, mode = "r") as inp_buffer:
             data = inp_buffer.read()
@@ -32,7 +32,7 @@ def read_pattern(json_file) -> dict:
 
 class ProcessFile:
     def __init__(self, file_path):
-        self.file_path = file_path
+        self.file_path = str(file_path)
         self.read_data = ERROR_READ
 
     def process(self):
